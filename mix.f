@@ -69,6 +69,18 @@
          ENDIF
       ENDIF
 *
+*       DYNAMIC ABSOLUTE AIC MERGER PATCH (ENERGY CONSERVATION)
+      IF(K1.GE.10.AND.K2.GE.10.AND.(M1+M2).GE.MCH)THEN
+         KS(1) = 13
+         KS(2) = 15
+*        Newborn NS accounts for 10% binding energy loss to neutrinos
+         M(1) = (M1 + M2) * 0.90D0
+         M(2) = 0.D0
+         M0(1) = M(1)
+         AJ(1) = 0.D0
+         RETURN
+      ENDIF
+
 *       Specify total mass.
       M3 = M1 + M2
       M03 = M01 + M02
@@ -102,8 +114,16 @@
 *       Ensure that a new WD has the initial mass set correctly.
          M03 = M3
          IF(ICASE.LT.12.AND.M3.GE.MCH)THEN
-            M3 = 0.D0
-            KW = 15
+*           ---------------------------------------------------
+*           REVISED AIC PATCH: EVALUATE VIA THE STATED KS ARRAY
+            IF(KS(1).EQ.12.OR.KS(2).EQ.12.OR.M3.GE.MCH)THEN
+               M3 = 1.260D0
+               KW = 13
+            ELSE
+               M3 = 0.D0
+               KW = 15
+            ENDIF
+*           ---------------------------------------------------
          ENDIF
       ELSEIF(ICASE.EQ.13.OR.ICASE.EQ.14)THEN
 *       Set unstable Thorne-Zytkow object with fast mass loss of envelope 

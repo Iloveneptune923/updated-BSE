@@ -1329,13 +1329,23 @@
                kstar(j2) = 12
             endif
          endif
-         kstar(j1) = 15
-         mass(j1) = 0.d0
+*        DYNAMIC BINARY ACCRETION AIC PATCH
+*        Star 1 (Accretor) turns into a Neutron Star
+         kstar(1) = 13
+*        NS mass accounts for 10% neutrino loss of total mass at threshold
+         mass(1) = (mass(1) + mass(2)) * 0.90d0
+*        Star 2 stays a CO White Dwarf
+         kstar(2) = 11
+*        Dynamically subtract exactly what Star 2 had left over
+         mass(2) = MAX(0.0D0, mass(2) - (mch - mass(1)))
+         snova = .true.
 *
 * Might be a supernova that destroys the system.
 *
-         if(kstar(j2).le.11.and.mass(j2).gt.mch)then
-            kstar(j2) = 15
+         if(kstar(j2).le.12.and.mass(j2).gt.mch)then
+            kstar(j1) = 13
+            mass(j1) = 1.260d0
+            snova = .true.
             mass(j2) = 0.d0
          endif
          coel = .true.
